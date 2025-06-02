@@ -47,3 +47,9 @@ Chrome: Coming soon
 | `               | Toggle Sidebar        |
 
 Knowing these will help you do most things without needing to re-show the UI, as that defeats some of the point of being able to hide the UI.
+
+# TODOs
+
+- [ ] Help should open even if UI is hidden
+- [ ] Publish new version on firefox
+- [ ] Publish on chrome

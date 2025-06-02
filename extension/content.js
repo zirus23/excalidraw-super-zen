@@ -138,7 +138,6 @@ const superZenShortcuts = [
   { key: "R", desc: "Rectangle" },
   { key: "5", desc: "Arrow" },
   { key: "6", desc: "Line" },
-  { key: "S", desc: "Color Picker" },
   { key: "S -> B", desc: "Color Red" },
   { key: "CMD + Shift + < / >", desc: "Decrease/Increase Text Size" },
 ];
