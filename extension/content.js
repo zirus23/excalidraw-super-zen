@@ -146,40 +146,50 @@ const superZenShortcuts = [
   { key: "CMD + Shift + < / >", desc: "Decrease/Increase Text Size" },
 ];
 
-function renderShortcutKeys(key) {
+// Safe DOM-based key renderer
+function renderShortcutKeysSafe(key, container) {
   // Split on 'or' for alternatives
   const alternatives = key.split(/\s+or\s+/i);
-  return alternatives
-    .map((alt, altIdx) => {
-      // Split on '->' for sequences
-      const sequences = alt.split('->').map(s => s.trim());
-      const seqHtml = sequences
-        .map((combo) => {
-          // Split on '+' for combos
-          const keys = combo.split('+').map(k => k.trim());
-          let html = '';
-          for (let i = 0; i < keys.length; i++) {
-            const k = keys[i];
-            // If key is a separator (e.g. " < / > "), split and render as kbd / kbd
-            if (/^.+\s\/\s.+$/.test(k)) {
-              // e.g. "< / >"
-              const [left, right] = k.split(/\s\/\s/);
-              html += `<kbd class="HelpDialog__key">${left}</kbd> / <kbd class="HelpDialog__key">${right}</kbd>`;
-            } else {
-              html += `<kbd class="HelpDialog__key">${k}</kbd>`;
-            }
-            if (i < keys.length - 1) html += ' + ';
-          }
-          return html;
-        })
-        .join(' → ');
-      // Add " or " between alternatives
-      if (altIdx < alternatives.length - 1) {
-        return seqHtml + ' or ';
+  alternatives.forEach((alt, altIdx) => {
+    // Split on '->' for sequences
+    const sequences = alt.split('->').map(s => s.trim());
+    sequences.forEach((combo, seqIdx) => {
+      // Split on '+' for combos
+      const keys = combo.split('+').map(k => k.trim());
+      keys.forEach((k, kIdx) => {
+        // If key is a separator (e.g. " < / > "), split and render as kbd / kbd
+        if (/^.+\s\/\s.+$/.test(k)) {
+          // e.g. "< / >"
+          const [left, right] = k.split(/\s\/\s/);
+          const kbdLeft = document.createElement("kbd");
+          kbdLeft.className = "HelpDialog__key";
+          kbdLeft.textContent = left;
+          container.appendChild(kbdLeft);
+
+          container.appendChild(document.createTextNode(" / "));
+
+          const kbdRight = document.createElement("kbd");
+          kbdRight.className = "HelpDialog__key";
+          kbdRight.textContent = right;
+          container.appendChild(kbdRight);
+        } else {
+          const kbd = document.createElement("kbd");
+          kbd.className = "HelpDialog__key";
+          kbd.textContent = k;
+          container.appendChild(kbd);
+        }
+        if (kIdx < keys.length - 1) {
+          container.appendChild(document.createTextNode(" + "));
+        }
+      });
+      if (seqIdx < sequences.length - 1) {
+        container.appendChild(document.createTextNode(" → "));
       }
-      return seqHtml;
-    })
-    .join('');
+    });
+    if (altIdx < alternatives.length - 1) {
+      container.appendChild(document.createTextNode(" or "));
+    }
+  });
 }
 
 function injectSuperZenShortcuts() {
@@ -199,34 +209,56 @@ function injectSuperZenShortcuts() {
   // Build the Super Zen shortcuts section
   const section = document.createElement("div");
   section.className = "HelpDialog__island super-zen-shortcuts";
-  section.style.cssText = `
-    margin-bottom: 24px;
-    max-width: 480px;
-  `;
+  section.style.marginBottom = "24px";
+  section.style.maxWidth = "480px";
 
-  section.innerHTML = `
-    <h3 class="HelpDialog__island-title" style="color:#f7c873; font-size: 1.5em; font-weight: bold; margin-bottom: 16px;">
-      Essential Shortcuts
-    </h3>
-    <p style="margin-bottom: 8px;">Most common shortcuts to know to avoid using the GUI most of the time.</p>
-    <div style="font-size: 0.95em; color: #888; margin-bottom: 4px;">
-      Recommended by Swarnim Kalden, creator of Super Zen.
-    </div>
-    <div class="HelpDialog__island-content">
-      ${superZenShortcuts
-        .map(
-          (s) => `
-        <div class="HelpDialog__shortcut">
-          <div>${s.desc}</div>
-          <div class="HelpDialog__key-container">
-            ${renderShortcutKeys(s.key)}
-          </div>
-        </div>
-      `
-        )
-        .join("")}
-    </div>
-  `;
+  // Title
+  const title = document.createElement("h3");
+  title.className = "HelpDialog__island-title";
+  title.style.color = "#f7c873";
+  title.style.fontSize = "1.5em";
+  title.style.fontWeight = "bold";
+  title.style.marginBottom = "16px";
+  title.textContent = "Essential Shortcuts";
+  section.appendChild(title);
+
+  // Description
+  const desc = document.createElement("p");
+  desc.style.marginBottom = "8px";
+  desc.textContent =
+    "Most common shortcuts to know to avoid using the GUI most of the time.";
+  section.appendChild(desc);
+
+  // Attribution
+  const attribution = document.createElement("div");
+  attribution.style.fontSize = "0.95em";
+  attribution.style.color = "#888";
+  attribution.style.marginBottom = "4px";
+  attribution.textContent =
+    "Recommended by Swarnim Kalden, creator of Super Zen.";
+  section.appendChild(attribution);
+
+  // Shortcuts list
+  const content = document.createElement("div");
+  content.className = "HelpDialog__island-content";
+
+  superZenShortcuts.forEach((s) => {
+    const shortcutDiv = document.createElement("div");
+    shortcutDiv.className = "HelpDialog__shortcut";
+
+    const descDiv = document.createElement("div");
+    descDiv.textContent = s.desc;
+    shortcutDiv.appendChild(descDiv);
+
+    const keyContainer = document.createElement("div");
+    keyContainer.className = "HelpDialog__key-container";
+    renderShortcutKeysSafe(s.key, keyContainer);
+    shortcutDiv.appendChild(keyContainer);
+
+    content.appendChild(shortcutDiv);
+  });
+
+  section.appendChild(content);
 
   // Change "Keyboard shortcuts" to "All Keyboard Shortcuts"
   if (h3.textContent.trim() === "Keyboard shortcuts") {
