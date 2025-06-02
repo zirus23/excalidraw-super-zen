@@ -50,6 +50,5 @@ Knowing these will help you do most things without needing to re-show the UI, as
 
 # TODOs
 
-- [ ] Help should open even if UI is hidden
 - [ ] Publish new version on firefox
 - [ ] Publish on chrome
