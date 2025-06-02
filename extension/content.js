@@ -39,6 +39,8 @@ function reapplyHiding() {
   UI_SELECTORS.forEach(selector => {
     const matches = document.querySelectorAll(selector);
     matches.forEach(el => {
+      // Don't hide if inside HelpDialog
+      if (el.closest('.HelpDialog')) return;
       if (!knownElements.has(el)) {
         el.classList.add("super-zen-hide");
         knownElements.add(el);
@@ -51,6 +53,8 @@ function reapplyHiding() {
 function removeAllZenHiding() {
   UI_SELECTORS.forEach(selector => {
     document.querySelectorAll(selector).forEach(el => {
+      // Don't unhide if inside HelpDialog (not needed, but safe)
+      if (el.closest('.HelpDialog')) return;
       el.classList.remove("super-zen-hide");
     });
   });
