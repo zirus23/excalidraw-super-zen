@@ -1,0 +1,28 @@
+{
+  "manifest_version": 3,
+  "name": "Excalidraw Super Zen",
+  "version": "10000.0.0.3",
+  "description": "Hide all UI for a clean, focused experience. MacOS: Cmd + Shift + B Windows: Ctrl + Shift + B",
+  "content_scripts": [
+    {
+      "matches": [
+        "https://app.excalidraw.com/s/*",
+        "https://excalidraw.com/*"
+      ],
+      "js": ["content.js"],
+      "run_at": "document_idle",
+      "all_frames": true
+    }
+  ],
+ "icons": {
+    "128": "icon.png"
+  },
+  "browser_specific_settings": {
+    "gecko": {
+      "id": "excalidraw-super-zen@swarnim.me"
+    }
+  },
+  "permissions": [
+    "storage"
+  ]
+}

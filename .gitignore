@@ -1,0 +1,4 @@
+# ignore video files that I just have here for organization
+assets/**/*.mp4
+assets/**/*.mov
+assets/**/*.gif
